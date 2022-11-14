@@ -1,0 +1,5 @@
+{
+    "python.analysis.typeCheckingMode": "basic",
+    "editor.foldingImportsByDefault": true,
+    "python.analysis.autoImportCompletions": false
+}
