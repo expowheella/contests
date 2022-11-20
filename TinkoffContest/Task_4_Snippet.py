@@ -3,81 +3,47 @@ import unittest
 
 
 def parse(stdin):
-    list = [int(i) for i in stdin if int(i) <= 1000000]
+    list = [int(i) for i in stdin if int(i) <= 10**4 and int(i) >= 1]
     return list
 
 
-collection = []
-
-
 def main(stdin1, stdin2):
+    if stdin1[0] <= 0:
+        return None
+    elif len(stdin2)!= stdin1[0]:
+        return None
     count = stdin1[1]
     numbers = stdin2
-    numbers.sort(reverse=True)
-    
+    numbers.sort()
 
-    mtrx = matrix(numbers)
-    print(mtrx)
+    result = []
+    while count != 0:
+        diff, count = run(numbers, count)
+        result.append(sum(diff))
+        if len(result) > stdin1[1]:
+            break
 
+    print(sum(result))
+    return sum(result)
+
+
+def run(numbers, count):
     diff = []
-    for i in mtrx:
-        digit = min(i)
-        pow = 10**(len(str(digit))-1)
-        head = (digit// pow) * pow
-        tail = digit % pow
-        diff.append((9*pow) - head)
-        print(" ")
 
-    
+    for index, i in enumerate(numbers):
 
-def matrix(numbers):
-    limit = len(str(numbers[0]))
-    result_list = []
-    while limit != 0:
-        if len(result_list)>0:
-            result_list.pop(-1)
-        new_list, numbers = detacher(numbers)
-        result_list.append(new_list)
-        if len(numbers)>0:
-            result_list.append(numbers)
-        limit -= 1
-
-    
-    return result_list
-
-
-def detacher(numbers):
-    new_list, second_list = [], []
-    length = len(str(numbers[0]))
-    for i in numbers:
-        if len(str(i)) == length:
-            new_list.append(i)
-        else:
-            second_list.append(i)
-    return new_list, second_list
-
-    maximum = len(str(max(numbers)))
-
-    pow = 10**(maximum-1)
-
-    head_list, tail_list = [], []
-    for i in numbers:
-        while count != 0:
+        if len(str(max(numbers))) == len(str(i)) and i >= 1:
+            pow = 10**(len(str(i))-1)
             head = (i // pow) * pow
             tail = i % pow
-
-            head_list.append(head)
-            tail_list.append(tail)
-
-            diff = (9*pow) - min(head_list)
-            collection.append(diff)
+            diff.append((9*pow) - head)
+            numbers.pop(index)
+            numbers.append(tail)
+            numbers.sort()
             count -= 1
-
-    stdin2 = tail_list
-
-    result = sum(collection)
-    print(result)
-    return result
+            if count == 0 or diff[0] == 0:
+                break
+    return diff, count
 
 
 if __name__ == "__main__":
@@ -87,7 +53,7 @@ if __name__ == "__main__":
     stdin1 = parse(stdin1)
     stdin2 = parse(stdin2)
 
-    stdin2 = main(stdin1, stdin2)
+    sum_diff = main(stdin1, stdin2)
 
 
 class TestCase1(unittest.TestCase):
@@ -98,3 +64,27 @@ class TestCase1(unittest.TestCase):
     def test_2(self):
         result = main([3, 1], [99, 5, 85])
         self.assertEqual(result, 10)
+
+    def test_3(self):
+        result = main([1, 10], [9999])
+        self.assertEqual(result, 0)
+
+    def test_4(self):
+        result = main([1, 10], [9998])
+        self.assertEqual(result, 1)
+
+    def test_5(self):
+        result = main([3, 10], [99, 5, 85])
+        self.assertEqual(result, 18)
+
+    def test_6(self):
+        result = main([0, 10], [99, 5, 85])
+        self.assertEqual(result, None)
+
+    def test_7(self):
+        result = main([1, 10], [9999, 9998])
+        self.assertEqual(result, None)
+
+    def test_8(self):
+        result = main([2, 10], [1, 9998])
+        self.assertEqual(result, 9)
